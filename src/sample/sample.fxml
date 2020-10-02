@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="center" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <stylesheets>
+        <URL value="@/css/style.css" />
+    </stylesheets>
+    <TextArea fx:id="taChatMessages" editable="false" focusTraversable="false" promptText="Сообщения отсутсвуют" VBox.vgrow="ALWAYS" />
+
+    <HBox alignment="BOTTOM_LEFT">
+        <TextField fx:id="tfMessageText" alignment="TOP_LEFT" onKeyPressed="#tfMessageTextOnKeyPressed" onKeyReleased="#tfMessageTextOnKeyReleased" prefHeight="25.0" prefWidth="284.0" promptText="Введите сообщение" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnSendMessage" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#btnSendMessage" prefHeight="25.0" prefWidth="242.0" text="Отправить" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+    </HBox>
+</VBox>

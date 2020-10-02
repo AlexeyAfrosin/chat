@@ -1,0 +1,7 @@
+.text-area {
+    -fx-text-fill: deepskyblue;
+}
+
+.button{
+    -fx-font-weight: bold;
+}
