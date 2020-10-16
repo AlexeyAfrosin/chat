@@ -13,9 +13,14 @@
         <TextField fx:id="loginField" promptText="login" HBox.hgrow="ALWAYS" />
         <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="password" HBox.hgrow="ALWAYS" />
         <Button minWidth="60" onAction="#tryToAuth" text="sign in" />
+        <Button minWidth="60" onAction="#tryToRegister" text="register" />
     </HBox>
 
-    <TextArea fx:id="taChatMessages" editable="false" focusTraversable="false" promptText="Сообщения отсутсвуют" VBox.vgrow="ALWAYS" />
+    <HBox VBox.vgrow="ALWAYS">
+        <TextArea fx:id="taChatMessages" editable="false" focusTraversable="false" promptText="Сообщения отсутсвуют" HBox.hgrow="ALWAYS" />
+        <ListView fx:id="clientList" minWidth="60" visible="false" managed="false"
+                  onMouseClicked="#clickClientList"/>
+    </HBox>
 
     <HBox fx:id="msgPanel" managed="false" visible="false">
         <TextField fx:id="tfMessageText" alignment="TOP_LEFT" onKeyPressed="#tfMessageTextOnKeyPressed" onKeyReleased="#tfMessageTextOnKeyReleased" prefHeight="25.0" prefWidth="284.0" promptText="Введите сообщение" HBox.hgrow="ALWAYS" />
