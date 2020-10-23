@@ -70,10 +70,12 @@ public class Server {
 
     public void subscribe(ClientHandler clientHandler) {
         clients.add(clientHandler);
+        broadcastClientList();
     }
 
     public void unsubscribe(ClientHandler clientHandler) {
         clients.remove(clientHandler);
+        broadcastClientList();
     }
 
     public AuthService getAuthService() {
@@ -83,5 +85,27 @@ public class Server {
     private String prepareMessage(String nickName, String message) {
         return String.format("%s\n[%s]: %s\n", formatter.format(new Date()), nickName, message);
     }
+
+    public boolean isLoginAuthenticated(String login) {
+        for (ClientHandler c : clients) {
+            if (c.getLogin().equals(login)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void broadcastClientList() {
+        StringBuilder sb = new StringBuilder(SharedConstants.CLIENT_LIST + " ");
+
+        for (ClientHandler c : clients) {
+            sb.append(c.getNickname()).append(" ");
+        }
+        String message = sb.toString();
+        for (ClientHandler c : clients) {
+            c.sendMsg(message);
+        }
+    }
+
 }
 
