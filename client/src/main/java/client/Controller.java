@@ -19,6 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sharedConstants.SharedConstants;
 
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -239,7 +240,7 @@ public class Controller implements Initializable {
 
     private void createRegistrationWindow() {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("regisration.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/regisration.fxml"));
             Parent root = fxmlLoader.load();
             registrationStage = new Stage();
             registrationStage.setTitle("Регистрация в чате " + Constants.CHAT_TITLE);
