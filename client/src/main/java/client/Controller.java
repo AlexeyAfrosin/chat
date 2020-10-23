@@ -15,6 +15,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sharedConstants.SharedConstants;
@@ -32,6 +33,8 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
     @FXML
     public ListView clientList;
+    @FXML
+    public VBox clientListVbox;
 
     @FXML
     HBox msgPanel;
@@ -63,6 +66,7 @@ public class Controller implements Initializable {
     private RegistrationController registrationController;
 
     private String nickname;
+    private String login;
 
     private static boolean isSocketTimeoutException;
 
@@ -80,8 +84,8 @@ public class Controller implements Initializable {
         msgPanel.setVisible(authenticated);
         msgPanel.setManaged(authenticated);
 
-        clientList.setVisible(authenticated);
-        clientList.setManaged(authenticated);
+        clientListVbox.setVisible(authenticated);
+        clientListVbox.setManaged(authenticated);
 
         if (!authenticated) {
             nickname = "";
@@ -91,7 +95,7 @@ public class Controller implements Initializable {
         }
         if (isIsSocketTimeoutException()) {
             taChatMessages.appendText("Превышено время ожидания авторизации");
-        }else{
+        } else {
             taChatMessages.clear();
         }
 
@@ -175,7 +179,7 @@ public class Controller implements Initializable {
                                     "возможно такой логин или никнейм уже заняты");
                         }
 
-                        if(!isIsSocketTimeoutException()) {
+                        if (!isIsSocketTimeoutException()) {
                             taChatMessages.appendText(str + "\n");
                         }
                     }
@@ -184,16 +188,15 @@ public class Controller implements Initializable {
                     while (true) {
                         String str = in.readUTF();
 
+                        if (str.startsWith(SharedConstants.CHANGE_NICKNAME_OK)) {
+                            nickname = str.split("\\s")[1];
+                            setTitle(String.format("[ %s ] - %s", nickname, Constants.CHAT_TITLE));
+                        }
+
                         if (str.equals(SharedConstants.END_CONNECTION)) {
                             break;
                         } else if (str.startsWith(SharedConstants.CLIENT_LIST + " ")) {
-                            String[] token = str.split("\\s");
-                            Platform.runLater(() -> {
-                                clientList.getItems().clear();
-                                for (int i = 1; i < token.length; i++) {
-                                    clientList.getItems().add(token[i]);
-                                }
-                            });
+                            refreshClientList(str.split("\\s"));
                         } else {
                             taChatMessages.appendText(str + "\n");
                         }
@@ -217,13 +220,22 @@ public class Controller implements Initializable {
         }
     }
 
+    private void refreshClientList(String[] clientListArr) {
+        Platform.runLater(() -> {
+            clientList.getItems().clear();
+            for (int i = 1; i < clientListArr.length; i++) {
+                clientList.getItems().add(clientListArr[i]);
+            }
+        });
+    }
+
     public void tryToAuth(ActionEvent actionEvent) {
         if (socket == null || socket.isClosed()) {
             connect();
         }
-
+        login = loginField.getText().trim();
         String msg = String.format("%s %s %s",
-                SharedConstants.AUTH, loginField.getText().trim(), passwordField.getText().trim());
+                SharedConstants.AUTH, login, passwordField.getText().trim());
         try {
             out.writeUTF(msg);
             passwordField.clear();
@@ -275,8 +287,28 @@ public class Controller implements Initializable {
     }
 
     public void clickClientList(MouseEvent mouseEvent) {
-        if (clientList.getSelectionModel().getSelectedIndex() > -1 ) {
+        if (clientList.getSelectionModel().getSelectedIndex() > -1) {
             tfMessageText.setText(String.format("%s %s ", SharedConstants.PERSONAL_MESSAGE, clientList.getSelectionModel().getSelectedItem()));
+        }
+    }
+
+    public void tryToChangeNick(ActionEvent actionEvent) {
+        registrationController.setChangeNickNameFormStyle();
+        registrationController.setLogin(login);
+        registrationStage.show();
+    }
+
+    public void tryChangeNickname(String login, String nickname) {
+        String msg = String.format("%s %s %s", SharedConstants.CHANGE_NICKNAME, login, nickname);
+
+        if (socket == null || socket.isClosed()) {
+            connect();
+        }
+
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

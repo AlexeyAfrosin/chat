@@ -17,7 +17,8 @@ public class Server {
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
-        authService = new SimpleAuthService();
+//        authService = new SimpleAuthService();
+        authService = new DatabaseAuthService();
         formatter = new SimpleDateFormat(SharedConstants.DATE_FORMAT);
         ServerSocket server = null;
         Socket socket = null;
@@ -39,6 +40,11 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            if (authService instanceof DatabaseAuthService) {
+                ((DatabaseAuthService) authService).disconnect();
+            }
+
             try {
                 server.close();
             } catch (IOException e) {
@@ -107,5 +113,14 @@ public class Server {
         }
     }
 
+    public void updateUserNickNameInList(ClientHandler clientHandler, String newNick) {
+        for (ClientHandler c : clients) {
+            if (c.equals(clientHandler)) {
+                c.setNickname(newNick);
+                break;
+            }
+        }
+        broadcastClientList();
+    }
 }
 
