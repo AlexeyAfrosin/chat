@@ -1,17 +1,22 @@
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<VBox fx:controller="client.RegistrationController"
-      xmlns:fx="http://javafx.com/fxml" alignment="center">
-    <Label text="login"/>
-    <TextField fx:id="loginField" promptText="login"/>
-    <Label text="password"/>
-    <PasswordField fx:id="passwordField" promptText="password"/>
-    <Label text="nickname"/>
-    <TextField promptText="nickname" fx:id="nickField"/>
+<?xml version="1.0" encoding="UTF-8"?>
 
-    <TextArea fx:id="textArea" HBox.hgrow="ALWAYS" editable="false" VBox.vgrow="ALWAYS"/>
-    <Button text="register" minWidth="60" onAction="#clickOnRegistrationBtn"/>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx" fx:controller="client.RegistrationController">
+
+    <VBox fx:id="loginPasswordVbox">
+        <Label text="login" />
+        <TextField fx:id="loginField" promptText="login" />
+        <Label text="password" />
+        <PasswordField fx:id="passwordField" promptText="password" />
+    </VBox>
+    <Label text="nickname" />
+    <TextField fx:id="nickField" promptText="nickname" />
+    <TextArea fx:id="textArea" editable="false" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" />
+
+    <Button fx:id="btnRegister" minWidth="60" onAction="#clickOnRegistrationBtn" text="register" />
+    <Button fx:id="btnChangeNickname" minWidth="60" onAction="#clickOnchangeNicknameBtn" text="change nickname" visible="false" managed="false"/>
 
 
 </VBox>

@@ -4,26 +4,34 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="center" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.Controller">
+<VBox alignment="center" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.Controller">
     <stylesheets>
-        <URL value="@css/style.css" />
+        <URL value="@css/style.css"/>
     </stylesheets>
 
     <HBox fx:id="authPanel">
-        <TextField fx:id="loginField" promptText="login" HBox.hgrow="ALWAYS" />
-        <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="password" HBox.hgrow="ALWAYS" />
-        <Button minWidth="60" onAction="#tryToAuth" text="sign in" />
-        <Button minWidth="60" onAction="#tryToRegister" text="register" />
+        <TextField fx:id="loginField" promptText="login" HBox.hgrow="ALWAYS"/>
+        <PasswordField fx:id="passwordField" onAction="#tryToAuth" promptText="password" HBox.hgrow="ALWAYS"/>
+        <Button minWidth="60" onAction="#tryToAuth" text="sign in"/>
+        <Button minWidth="60" onAction="#tryToRegister" text="register"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
-        <TextArea fx:id="taChatMessages" editable="false" focusTraversable="false" promptText="Сообщения отсутсвуют" HBox.hgrow="ALWAYS" />
-        <ListView fx:id="clientList" minWidth="60" visible="false" managed="false"
-                  onMouseClicked="#clickClientList"/>
+        <TextArea fx:id="taChatMessages" editable="false" focusTraversable="false" promptText="Сообщения отсутсвуют"
+                  HBox.hgrow="ALWAYS"/>
+        <VBox fx:id="clientListVbox" visible="false" managed="false">
+            <Button minWidth="60" onAction="#tryToChangeNick" text="change nickname"/>
+            <ListView fx:id="clientList" minWidth="60" onMouseClicked="#clickClientList"/>
+        </VBox>
     </HBox>
 
     <HBox fx:id="msgPanel" managed="false" visible="false">
-        <TextField fx:id="tfMessageText" alignment="TOP_LEFT" onKeyPressed="#tfMessageTextOnKeyPressed" onKeyReleased="#tfMessageTextOnKeyReleased" prefHeight="25.0" prefWidth="284.0" promptText="Введите сообщение" HBox.hgrow="ALWAYS" />
-        <Button fx:id="btnSendMessage" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#btnSendMessage" prefHeight="25.0" prefWidth="242.0" text="Отправить" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+        <TextField fx:id="tfMessageText" alignment="TOP_LEFT" onKeyPressed="#tfMessageTextOnKeyPressed"
+                   onKeyReleased="#tfMessageTextOnKeyReleased" prefHeight="25.0" prefWidth="284.0"
+                   promptText="Введите сообщение" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnSendMessage" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false"
+                onAction="#btnSendMessage" prefHeight="25.0" prefWidth="242.0" text="Отправить" textAlignment="CENTER"
+                HBox.hgrow="ALWAYS"/>
     </HBox>
 </VBox>

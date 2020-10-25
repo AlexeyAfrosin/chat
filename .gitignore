@@ -3,3 +3,6 @@
 /chat.iml
 /.idea/
 /out
+/client/target/
+/server/target/
+/sharedConstants/target/

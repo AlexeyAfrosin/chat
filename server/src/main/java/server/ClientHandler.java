@@ -77,6 +77,23 @@ public class ClientHandler {
 //                        try {
                         String str = in.readUTF();
 
+                        if (str.startsWith(SharedConstants.CHANGE_NICKNAME + " ")) {
+
+                            String[] token = str.split("\\s");
+                            if (token.length < 2) {
+                                continue;
+                            }
+
+                            String newNick = token[2];
+
+                            if (server.getAuthService().changeNickname(token[1], newNick)) {
+                                sendMsg(SharedConstants.CHANGE_NICKNAME_OK + " " + newNick);
+                                server.updateUserNickNameInList(this, newNick);
+                            } else {
+                                sendMsg("Ник '" + newNick + "' уже используется");
+                            }
+                        }
+
                         if (str.equals(SharedConstants.END_CONNECTION)) {
                             sendMsg(SharedConstants.END_CONNECTION);
                             break;
@@ -114,6 +131,10 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getNickname() {
