@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.ayuafrosin.chat</groupId>
-            <artifactId>shaedConstants</artifactId>
+            <artifactId>sharedConstants</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
