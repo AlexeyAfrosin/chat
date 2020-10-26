@@ -69,6 +69,7 @@ public class Controller implements Initializable {
     private String login;
 
     private static boolean isSocketTimeoutException;
+    private HistoryService historyService;
 
     private static void setIsSocketTimeoutException(boolean pIsSocketTimeoutException) {
         isSocketTimeoutException = pIsSocketTimeoutException;
@@ -99,6 +100,11 @@ public class Controller implements Initializable {
             taChatMessages.clear();
         }
 
+        if (authenticated) {
+            historyService = new FileHistoryService(login);
+            taChatMessages.appendText(historyService.getHistory(Constants.HISTORY_LAST_MESSAGE_COUNT));
+        }
+
     }
 
     @Override
@@ -113,6 +119,10 @@ public class Controller implements Initializable {
                         e.printStackTrace();
                     }
                 }
+                if (historyService != null) {
+                    historyService.closeConnection();
+                }
+
             });
         });
 
@@ -199,6 +209,7 @@ public class Controller implements Initializable {
                             refreshClientList(str.split("\\s"));
                         } else {
                             taChatMessages.appendText(str + "\n");
+                            historyService.writeHistory(Constants.MESSAGE_DELIMITER + str);
                         }
                     }
                 } catch (IOException e) {
