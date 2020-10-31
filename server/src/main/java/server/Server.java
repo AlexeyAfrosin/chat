@@ -7,13 +7,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.*;
 import java.text.SimpleDateFormat;
 
 public class Server {
     private List<ClientHandler> clients;
     private AuthService authService;
     SimpleDateFormat formatter;
+    ExecutorService clientHandlerServices = Executors.newFixedThreadPool(SharedConstants.MAX_USER_COUNT);
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
@@ -28,10 +29,13 @@ public class Server {
             System.out.println("Server started");
 
             while (true) {
-                socket = server.accept();
-                new ClientHandler(this, socket);
+                try {
+                    socket = server.accept();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                clientHandlerServices.execute(new ClientHandler(this, socket));
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -47,6 +51,7 @@ public class Server {
 
             try {
                 server.close();
+                clientHandlerServices.shutdown();
             } catch (IOException e) {
                 e.printStackTrace();
             }
