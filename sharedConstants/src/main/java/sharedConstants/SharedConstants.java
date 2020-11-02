@@ -20,6 +20,7 @@ public class SharedConstants {
 
     public static final int SOCKET_TIMEOUT = 5000;
     public static final int SOCKET_NO_TIMEOUT = 0;
+    public static final int MAX_USER_COUNT = 10;
 
 
 
