@@ -2,6 +2,8 @@ package server;
 
 import sharedConstants.SharedConstants;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,11 +11,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 import java.text.SimpleDateFormat;
+import java.util.logging.*;
 
 public class Server {
     private List<ClientHandler> clients;
     private AuthService authService;
     SimpleDateFormat formatter;
+    Logger logger = Logger.getLogger(this.getClass().getName());
     ExecutorService clientHandlerServices = Executors.newFixedThreadPool(SharedConstants.MAX_USER_COUNT);
 
     public Server() {
@@ -24,37 +28,73 @@ public class Server {
         ServerSocket server = null;
         Socket socket = null;
 
+        prepareLogger();
+
         try {
             server = new ServerSocket(SharedConstants.SERVER_PORT);
-            System.out.println("Server started");
 
+            writeLog(Level.INFO, "Server started");
             while (true) {
                 try {
                     socket = server.accept();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    writeLog(Level.SEVERE, String.valueOf(e.getStackTrace()));
                 }
                 clientHandlerServices.execute(new ClientHandler(this, socket));
             }
         } catch (IOException e) {
             e.printStackTrace();
+            writeLog(Level.SEVERE, String.valueOf(e.getStackTrace()));
         } finally {
             try {
                 socket.close();
+                writeLog(Level.INFO, "Соединение закрыто");
             } catch (IOException e) {
                 e.printStackTrace();
+                writeLog(Level.SEVERE, String.valueOf(e.getStackTrace()));
             }
 
             if (authService instanceof DatabaseAuthService) {
                 ((DatabaseAuthService) authService).disconnect();
+                writeLog(Level.INFO, "Соединение с базой данных закрыто");
             }
 
             try {
                 server.close();
                 clientHandlerServices.shutdown();
+                writeLog(Level.INFO, "Сервер остановлен");
             } catch (IOException e) {
                 e.printStackTrace();
+                writeLog(Level.SEVERE, String.valueOf(e.getStackTrace()));
             }
+        }
+    }
+
+    private void prepareLogger() {
+        Handler fileHandler = null;
+
+        try {
+            LogManager logManager = LogManager.getLogManager();
+            logManager.readConfiguration(new FileInputStream("server/logging.properties"));
+
+            prepareLogDir();
+            fileHandler = new FileHandler(Constants.LOG_FILE_PATH + "/log_%g.txt", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            fileHandler.setLevel(Level.ALL);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            writeLog(Level.SEVERE, String.valueOf(e.getStackTrace()));
+        }
+        logger.addHandler(fileHandler);
+    }
+
+    private void prepareLogDir() {
+        File dir = new File(Constants.LOG_FILE_PATH);
+        if (!dir.exists()) {
+            dir.mkdir();
         }
     }
 
@@ -68,13 +108,13 @@ public class Server {
             message = prepareMessage(sender.getNickname(), msg.substring(messageStartIdx));
             for (ClientHandler c : clients) {
                 if (c.getNickname().equals(senderNickname) || c.getNickname().equals(destinationUserNickname)) {
-                    c.sendMsg(message);
+                    c.sendMsg(message, Level.FINEST, String.format("Личное сообщение от '%s' к '%s': %s", senderNickname, destinationUserNickname, message));
                 }
             }
         } else {
             message = prepareMessage(senderNickname, msg);
             for (ClientHandler c : clients) {
-                c.sendMsg(message);
+                c.sendMsg(message, Level.FINEST, String.format("Сообщение от '%s' к '%s': %s", senderNickname, c.getNickname(), message));
             }
         }
     }
@@ -114,7 +154,7 @@ public class Server {
         }
         String message = sb.toString();
         for (ClientHandler c : clients) {
-            c.sendMsg(message);
+            c.sendMsg(message, Level.FINEST, String.format("Список пользователей: %s", message));
         }
     }
 
@@ -126,6 +166,12 @@ public class Server {
             }
         }
         broadcastClientList();
+    }
+
+    public void writeLog(Level level, String message) {
+        if (logger.isLoggable(level)) {
+            logger.log(level, message);
+        }
     }
 }
 
